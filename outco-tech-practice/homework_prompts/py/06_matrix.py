@@ -44,7 +44,7 @@
 #
 #                Example:
 #
-#                matrix.intitialize([[0, 1, 2],
+#                matrix.initialize([[0, 1, 2],
 #                                    [3, 4, 5],
 #                                    [6, 7, 8]])
 #
@@ -231,7 +231,7 @@
 #
 #
 #
-#        mulitply:   returns a new Matrix representing the matrix multiplication of original matrix
+#        multiply:   returns a new Matrix representing the matrix multiplication of original matrix
 #                    by the input matrix.
 #
 #                    Link to Wikipedia:
@@ -264,6 +264,7 @@
 #
 #                     =>  [[39, 64],
 #                          [38, 77]]
+from numpy.core.numeric import Infinity
 
 
 # NOTE: Please attempt to complete this hw without using additional modules such as numpy
@@ -274,48 +275,75 @@ class Matrix:
         self.storage = [[0 for col in range(n)] for row in range(m)]
 
     def printer(self):
-        # YOUR WORK HERE
-        pass
+        print(self.storage)
 
     def isValid(self, i, j):
-        # YOUR WORK HERE
-        pass
+        if i < self.m and j < self.n and i >= 0 and j >= 0:
+            return True
+        return False
 
     def initialize(self, arrayOfArrays):
-        # YOUR WORK HERE
-        pass
+        self.m = len(arrayOfArrays)
+        self.n = len(arrayOfArrays[0])
+        self.storage = [[val for val in row] for row in arrayOfArrays]
 
     def insert(self, i, j, val):
-        # YOUR WORK HERE
-        pass
+        if self.isValid(i, j):
+            self.storage[i][j] = val
+            return True
+        return False
 
     def retrieve(self, i, j):
-        # YOUR WORK HERE
-        pass
+        if self.isValid(i, j):
+            return self.storage[i][j]
+        return -Infinity
 
     def scale(self, factor):
-        # YOUR WORK HERE
-        pass
+        self.storage = [[factor*val for val in row] for row in self.storage]
 
     def fill(self, val):
-        # YOUR WORK HERE
-        pass
+        self.storage = [[val for v in row] for row in self.storage] #I had to change val for v otherwise it would overwrite the input
 
     def flatten(self):
-        # YOUR WORK HERE
-        pass
+        matrix_list = self.storage[0] #start with the first row
+        for i in range(1, self.m): #add all other rows one by one in a loop
+            for val in self.storage[i]:
+                matrix_list.append(val)
+        return matrix_list
 
     def slice(self, rowRange, colRange):
-        # YOUR WORK HERE
-        pass
+        if rowRange[0] < 0:
+            rowRange[0] = 0
+        if rowRange[1] > self.m:
+            rowRange[1] = self.m
+        if colRange[0] < 0:
+            colRange[0] = 0
+        if colRange[1] > self.n:
+            colRange[1] = self.n
+        matrix = Matrix(m=rowRange[1]-rowRange[0], n=colRange[1]-colRange[0])
+        matrix.initialize([[self.storage[r][c] for c in range(colRange[0], colRange[1])] for r in range(rowRange[0], rowRange[1])])
+        return matrix
 
     def transpose(self):
-        # YOUR WORK HERE
-        pass
+        matrix = Matrix(m=self.n, n=self.m)
+        matrix.initialize([[self.storage[r][c] for r in range(self.m)] for c in range(self.n)])
+        return matrix
 
     def multiply(self, matrix):
-        # YOUR WORK HERE
-        pass
+        if self.n != matrix.m:
+            return None
+        result = []
+        for r in range(self.m):
+            row = []
+            for c in range(matrix.n):
+                val = 0
+                for i in range(self.n):
+                    val += self.storage[r][i]*matrix.storage[i][c]
+                row.append(val)
+            result.append(row)
+        matrix = Matrix(m=1, n=1)
+        matrix.initialize(result)
+        return matrix
 
 
 #############################################################
