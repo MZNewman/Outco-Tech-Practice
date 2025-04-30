@@ -16,9 +16,43 @@
 # Worse Auxiliary Space Complexity:
 # Average Time Complexity:
 # Average Auxiliary Space Complexity:
+
 def heapsort(lst):
-    # YOUR WORK HERE
-    pass
+
+    length = len(lst)
+
+    def bubbleDown(l, parent, boundary):
+
+        def getChildIndex(l, parent, boundary):
+            child1 = 2*parent + 1
+            child2 = 2*parent + 2
+
+            if child1 >= boundary:
+                return child1
+            elif child2 >= boundary:
+                return child1   #this is done since child2>child1, so if child2>=boundary and we already know child1<boundary, then we want child1
+            elif l[child1] > l[child2]:
+                return child1   #we want to return the larger child since this is a max heap which is more convenient for heapsort
+            else:
+                return child2
+
+        child = getChildIndex(l, parent, boundary)
+
+        while child < boundary and l[parent] < l[child]:    #we need to restore the maxheap property only if the child exist in our list and is greater than the parent
+            l[parent], l[child] = l[child], l[parent]
+            parent = child  #the parent is not at the child index it just switched with, and we have to again make sure it's a maxheap
+            child = getChildIndex(l, parent, boundary)
+
+        return
+
+    for i in range(length-1, -1, -1):
+        bubbleDown(lst, i, length)
+
+    for wall in range(length-1, -1, -1):
+        lst[0], lst[wall] = lst[wall], lst[0]   #we're putting the guaranteed max element to the back of the array each time
+        bubbleDown(lst, 0, wall)    #then just restoring the maxheap property to guarantee the next max element moves to the back
+
+    return lst
 
 ############################################################
 ###############  DO NOT TOUCH TEST BELOW!!!  ###############
