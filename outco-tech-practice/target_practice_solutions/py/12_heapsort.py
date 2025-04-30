@@ -16,42 +16,47 @@
 # Worse Auxiliary Space Complexity: O(1)
 # Average Time Complexity: O(Nlog(N))
 # Average Auxiliary Space Complexity: O(1)
-
 def heapsort(lst):
+    heapsort.heap_length = 1
 
-    length = len(lst)
+    def get_parent(child):
+        return (child - 1) // 2
 
-    def bubbleDown(l, parent, boundary):
+    def get_child(parent):
+        left = parent * 2 + 1
+        if left >= heapsort.heap_length - 1 or lst[left] >= lst[left + 1]:
+            return left
+        return left + 1
 
-        def getChildIndex(l, parent, boundary):
-            child1 = 2*parent + 1
-            child2 = 2*parent + 2
+    def bubble_up():
+        child = heapsort.heap_length - 1
+        parent = get_parent(child)
+        while child > 0 and lst[parent] < lst[child]:
+            [lst[parent], lst[child]] = [lst[child], lst[parent]]
+            child = parent
+            parent = get_parent(child)
 
-            if child1 >= boundary:
-                return child1
-            elif child2 >= boundary:
-                return child1   #this is done since child2>child1, so if child2>=boundary and we already know child1<boundary, then we want child1
-            elif l[child1] > l[child2]:
-                return child1   #we want to return the larger child since this is a max heap which is more convenient for heapsort
-            else:
-                return child2
+    def bubble_down():
+        parent = 0
+        child = get_child(parent)
+        while child < heapsort.heap_length and lst[parent] < lst[child]:
+            [lst[parent], lst[child]] = [lst[child], lst[parent]]
+            parent = child
+            child = get_child(parent)
 
-        child = getChildIndex(l, parent, boundary)
+    def insert():
+        heapsort.heap_length += 1
+        bubble_up()
 
-        while child < boundary and l[parent] < l[child]:    #we need to restore the maxheap property only if the child exist in our list and is greater than the parent
-            l[parent], l[child] = l[child], l[parent]
-            parent = child  #the parent is not at the child index it just switched with, and we have to again make sure it's a maxheap
-            child = getChildIndex(l, parent, boundary)
+    def remove():
+        [lst[0], lst[heapsort.heap_length - 1]] = [lst[heapsort.heap_length - 1], lst[0]]
+        heapsort.heap_length -= 1
+        bubble_down()
 
-        return
-
-    for i in range(length-1, -1, -1):
-        bubbleDown(lst, i, length)
-
-    for wall in range(length-1, -1, -1):
-        lst[0], lst[wall] = lst[wall], lst[0]   #we're putting the guaranteed max element to the back of the array each time
-        bubbleDown(lst, 0, wall)    #then just restoring the maxheap property to guarantee the next max element moves to the back
-
+    while heapsort.heap_length < len(lst):
+        insert()
+    while heapsort.heap_length > 1:
+        remove()
     return lst
 
 ############################################################
