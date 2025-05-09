@@ -94,7 +94,8 @@ def powerset(input):
 ## If you draw the recursion tree, you see it has height M+N+1
 ## This is a similar problem with the same asymptotic complexity where it's M+N-1:
 ## https://stackoverflow.com/questions/68865667/why-does-grid-traveller-have-a-time-complexity-of-2nm?rq=3
-# Auxiliary Space Complexity: O(1), because we are using pure recursion so no need to store anything
+# Auxiliary Space Complexity: O(M+N), because of the call stack (tree depth)
+## We are using pure recursion so no need to store anything else
 ## Every recursion is a subproblem of the original problem
 ## Which also lends itself to memoization, if we desired it
 ## because the only possible paths are right and down
