@@ -32,36 +32,21 @@
 #  #373. You can also do this by mapping each subset to a binary number. The i th bit could
 #  represent a "boolean" flag for whether an element is in the set.
 
-# Here is a non-recursive version of the function which works well, but I'm practicing recursion here so I will write it recursively as well
-# def powerset(input):
-# #     pset = ['']
-# #     for letter in input:
-# #         add = []
-# #         for member in pset:
-# #             add.append(member+letter)
-# #         pset.extend(add)
-# #     return pset
 
-# This recursive function is based on modeling the problem as a binary tree
-# The root node is the base case, the empty string
-# At each step, we can either add no character or one character in the string
-# The leaves of tree will all be an element in our power set
-# Each leaf is akin to unique series of bits, one for each character in the input string
 def powerset(input):
-    result = []
-    length = len(input)
-    def recursively_add (build, depth):
-        if depth == length:
-            result.append(build)
+    results = []
+
+    def traverse(build, depth):
+        if (depth == len(input)):
+            results.append(build)
             return
 
-        #going down the left branch, we don't add anything
-        recursively_add(build, depth+1)
+        traverse(build, depth + 1)
+        traverse(build + input[depth], depth + 1)
 
-        #going down the right branch, we add a new base character
-        recursively_add(build+input[depth], depth+1)
-    recursively_add('', 0)
-    return result
+    traverse('', 0)
+    return results
+
 
 
 # Problem 2: Lattice Paths
@@ -90,21 +75,14 @@ def powerset(input):
 #
 
 
-# Time Complexity: O(2^[M+N])
-## If you draw the recursion tree, you see it has height M+N+1
-## This is a similar problem with the same asymptotic complexity where it's M+N-1:
-## https://stackoverflow.com/questions/68865667/why-does-grid-traveller-have-a-time-complexity-of-2nm?rq=3
-# Auxiliary Space Complexity: O(1), because we are using pure recursion so no need to store anything
-## Every recursion is a subproblem of the original problem
-## Which also lends itself to memoization, if we desired it
-## because the only possible paths are right and down
-## so the subproblems are modular enough for dynamic programming
+# Time Complexity: O(2^(M+N))
+# Auxiliary Space Complexity: O(M+N)
 def lattice_paths(m, n):
-    if m<0 or n<0:
-        return 0
-    elif m==0 and n==0:
+    if m == 0 and n == 0:
         return 1
-    return lattice_paths(m-1, n) + lattice_paths(m, n-1)
+    if m < 0 or n < 0:
+        return 0
+    return lattice_paths(m - 1, n) + lattice_paths(m, n - 1)
 
 
 # ###########################################################
