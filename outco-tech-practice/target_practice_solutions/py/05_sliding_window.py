@@ -40,53 +40,36 @@
 # contain two "A"s
 
 def minimum_window_substring(S, T):
-
-    if len(T) > len(S):
-        return ''
-
-    right = 0
-    left = 0
-    result = [0, float('inf')]
+    result = [0, inf]
     counts = {}
-    missingChars = len(T)
+    missing_characters = len(T)
 
-    #building our dictionary to account for each character in the target we need to track
-    #takes into account the extra credit of having possibly duplicate characters
-    for i in range(len(T)):
-        char = T[i]
-        if char in counts:
-            counts[char]+=1
-        else:
-            counts[char]=1
+    # create counts dictionary
+    for char in T:
+        counts[char] = 0
 
-    while right < len(S):   #sets up our loop to run until we reach past the end of the word
-        if missingChars > 0:
-            #hunting phase since we did not meet the condition of finding all characters yet
-            rChar = S[right]
-            if rChar in counts:
-                if counts[rChar] > 0:   #we haven't found all instances of this character that we need yet
-                    missingChars-=1
-                counts[rChar]-=1    #this takes into account having more than we need of a character
+    slow = 0
 
-        #catchup phase since we finally met the conditions, there are no more missing characters
-        #we want to make the window as small as possible here by moving left pointer
-        #so that there are still zero missing characters from our target in our substring
-        while missingChars == 0:
-            if (right-left) < (result[1] - result[0]):  #found a smaller window that our previous best
-                result = [left, right]
-            lChar = S[left]
-            if lChar in counts:
-                counts[lChar]+=1
-                if counts[lChar] > 0:
-                    missingChars+=1 #once counts are positive, we have some missing target characters
-            left+=1
+    for fast in range(len(S)):
+        if S[fast] in counts:
+            if counts[S[fast]] == 0:
+                missing_characters -= 1
+            counts[S[fast]] += 1
 
-        right +=1
+        while (missing_characters == 0):
+            if (fast - slow) < result[1] - result[0]:
+                result[0] = slow
+                result[1] = fast
+            if S[slow] in counts:
+                counts[S[slow]] -= 1
+                if (counts[S[slow]] == 0):
+                    missing_characters += 1
 
-    if result[1] == float('inf'):   #we never found the target in the string
-        return ''
-    else:
-        return S[result[0]:result[1]+1]
+            slow += 1
+
+    if result[1] == inf: return ""
+    return S[result[0]:result[1] + 1]
+
 
 # Problem 2:  Dungeon Escape
 #
@@ -119,7 +102,7 @@ def minimum_window_substring(S, T):
 #  Output:   7 (The steps to do this would be down, down, right, right)
 #
 #
-#    Note:   The initial health should be represented by a positive integers
+#    Note:   The initial health should be represented by a positve integers
 #            If the health ever drops to zero or a negative integer, the
 #            adventurer dies.
 #            Every room will contain an integer. It will either be empty (0),
@@ -129,38 +112,32 @@ def minimum_window_substring(S, T):
 #
 #
 
-# Time Complexity:
-# Auxiliary Space Complexity:
-
-# Two steps to solve this:
-# Step one: a recursion very similar to lattice paths will let us efficiently get all paths in combination with memoization
-# Step two: we need to run some technique to find the point in the path with the lowest health, a prefix sum might work for that, or just adding the
-# Important realization: we can run down the recursive tree and start from the base case, the dungeon exit, storing the amount of lost health
-# If we reach a point where the stored value becomes positive, we can discard it since the hero needs no extra help to get through that part of the path all the way to the end base case we started from
-# When discarding the positive paths, we will just zero them out and start over trying to find the negative
-# We just start recalculating from the new step, and we compare the two recursive paths
-
-from functools import lru_cache
+# Time Complexity: O(N)
+# Auxiliary Space Complexity: O(1)
 
 def dungeon_escape(dungeon):
-    @lru_cache(maxsize=None)
-    def dfs(r, c):
-        if r>=len(dungeon) or c>=len(dungeon[0]):   #if we go out of bounds, we are done and there is no chance we use this value so negative infinity ensures it's never chosen
-            return float('-inf')
-        if r==len(dungeon)-1 and c==len(dungeon[0])-1:  #this is the base case, the exit room, and we return 0 in a positive case and the actual value in a negative case
-            if dungeon[r][c] >= 0:
-                return 0
-            else:
-                return dungeon[r][c]
-        down = dfs(r+1, c)+dungeon[r][c]    #the recursion steps, adding the new value from the current dungeon room
-        right = dfs(r, c+1)+dungeon[r][c]
-        if down>=0: #if the down or right path is neutral or positive, then we can zero it out since we need to get there first, but it's the best option so we can return
-            return 0
-        if right>=0:
-            return 0
-        return max(down, right)
-    return -dfs(0, 0) + 1   #we kept track of health loss starting from zero, so the actual minimum health is the negative of that +1 so there is at least one health at the end
+    yBound = len(dungeon)
+    xBound = len(dungeon[0])
 
+    # bottom right corner
+    dungeon[yBound - 1][xBound - 1] = max(1 - dungeon[yBound - 1][xBound - 1], 1)
+
+    # bottom row
+    for x in range(xBound - 2, -1, -1):
+        dungeon[yBound - 1][x] = max(dungeon[yBound - 1][x + 1] - dungeon[yBound - 1][x], 1)
+
+    # right column
+    for y in range(yBound - 2, -1, -1):
+        dungeon[y][xBound - 1] = max(dungeon[y + 1][xBound - 1] - dungeon[y][xBound - 1], 1)
+
+    # remainder of dungeon
+    for y in range(yBound - 2, -1, -1):
+        for x in range(xBound - 2, -1, -1):
+            from_right = max(dungeon[y][x + 1] - dungeon[y][x], 1)
+            from_below = max(dungeon[y + 1][x] - dungeon[y][x], 1)
+            dungeon[y][x] = min(from_right, from_below)
+
+    return dungeon[0][0]
 
 #############################################
 ########  DO NOT TOUCH TEST BELOW!!!  #######
