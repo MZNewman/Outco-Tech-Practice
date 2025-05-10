@@ -37,19 +37,18 @@
 #
 
 
-# Time Complexity: O(M*N), since we are filling out an M*N table in our tabulation
-# Auxiliary Space Complexity: O(M) since we are just overwriting the array each time
-## O(M) won't work in every case, sometimes you need to use O(M*N) due to diagonal dependencies which cause you to keep the whole table
+# Time Complexity: O(NK)
+# Auxiliary Space Complexity: O(N)
 
 def coin_sum(coins, total):
-    table = [0]*(total+1) #we can just use tabulation and rewrite the array for each row
+    table = [0] * (total + 1)
     table[0] = 1
-
     for coin in coins:
         for i in range(coin, len(table)):
-            table[i] = table[i] + table[i-coin]
+            table[i] = table[i] + table[i - coin]
 
-    return table[total]
+    return table[len(table) - 1]
+
 
 
 ############################################################
