@@ -67,10 +67,10 @@ sample_tree = deserialize(lst)
 #  2. Given the example output binary search tree from Problem 1, what would
 #     the order of values printed be if we used:
 #
-#     a. BREADTH FIRST traversal: 4, 2, 5, 1, 3, 7, 6, 8
-#     b. PRE-ORDER DEPTH first traversal: 4, 2, 1, 3, 5, 7, 6, 8
-#     c. IN-ORDER DEPTH first traversal: 1, 2, 3, 4, 5, 6, 7, 8
-#     d. POST-ORDER DEPTH first traversal: 1, 3, 2, 6, 8, 7, 5, 4
+#     a. BREADTH FIRST traversal: [4,2,5,1,3,7,6,8]
+#     b. PRE-ORDER DEPTH first traversal: [4,2,1,3,5,7,6,8]
+#     c. IN-ORDER DEPTH first traversal: [1,2,3,4,5,6,7,8]
+#     d. POST-ORDER DEPTH first traversal: [1,3,2,6,8,7,5,4]
 
 
 #
@@ -84,29 +84,21 @@ sample_tree = deserialize(lst)
 #  NOTE: You may use a list or linked list for your queue.
 #  NOTE: Confirm with your answer from problem 2a.
 #
-from collections import deque
 
 def bfs(node):
-    queue = deque()
-    result = []
-
     if node is None:
-        return result
+        return []
+    result = []
+    queue = [node]
 
-    queue.append(node)
-
-    while len(queue)>0:
-        current = queue.popleft()
-        result.append(current.value)
-
+    while len(queue) > 0:
+        current = queue.pop(0)
         if current.left is not None:
             queue.append(current.left)
-
         if current.right is not None:
             queue.append(current.right)
-
+        result.append(current.value)
     return result
-
 
 #
 #  3b. Using recursion, write a function that takes in a binary search tree and
@@ -120,17 +112,16 @@ def bfs(node):
 
 
 def dfs_pre(node):
-    if node is None:
-        return []
+    result = []
 
-    result = [node.value]
-
-    result.extend(dfs_pre(node.left))
-
-    result.extend(dfs_pre(node.right))
-
+    def traverse(current):
+        if current is None:
+            return
+        result.append(current.value)
+        traverse(current.left)
+        traverse(current.right)
+    traverse(node)
     return result
-
 
 #
 #  3c. Using recursion, write a function that takes in a binary search tree and
@@ -144,17 +135,16 @@ def dfs_pre(node):
 
 
 def dfs_in(node):
-    if node is None:
-        return []
+    result = []
 
-    result = dfs_in(node.left)
-
-    result.append(node.value)
-
-    result.extend(dfs_in(node.right))
-
+    def traverse(current):
+        if current is None:
+            return
+        traverse(current.left)
+        result.append(current.value)
+        traverse(current.right)
+    traverse(node)
     return result
-
 
 #
 #  3d. Using recursion, write a function that takes in a binary search tree and
@@ -168,16 +158,18 @@ def dfs_in(node):
 
 
 def dfs_post(node):
-    if node is None:
-        return []
+    result = []
 
-    result = dfs_post(node.left)
-
-    result.extend(dfs_post(node.right))
-
-    result.append(node.value)
-
+    def traverse(current):
+        if current is None:
+            return
+        traverse(current.left)
+        traverse(current.right)
+        result.append(current.value)
+    traverse(node)
     return result
+
+
 
 
 ############################################################
@@ -278,7 +270,7 @@ def test():
     return not(results is None) and lists_equal(results, [])
 
 
-expect(test_count, 'returns an empty array for an empty BST', test)
+expect(test_count, 'returns an empty erray for an empty BST', test)
 
 print('PASSED: ' + str(test_count[0]) + ' / ' + str(test_count[1]) + '\n\n')
 
@@ -300,7 +292,7 @@ def test():
     return not(results is None) and lists_equal(results, [])
 
 
-expect(test_count, 'returns an empty array for an empty BST', test)
+expect(test_count, 'returns an empty erray for an empty BST', test)
 
 print('PASSED: ' + str(test_count[0]) + ' / ' + str(test_count[1]) + '\n\n')
 
@@ -322,7 +314,7 @@ def test():
     return not(results is None) and lists_equal(results, [])
 
 
-expect(test_count, 'returns an empty array for an empty BST', test)
+expect(test_count, 'returns an empty erray for an empty BST', test)
 
 print('PASSED: ' + str(test_count[0]) + ' / ' + str(test_count[1]) + '\n\n')
 
@@ -344,6 +336,6 @@ def test():
     return not(results is None) and lists_equal(results, [])
 
 
-expect(test_count, 'returns an empty array for an empty BST', test)
+expect(test_count, 'returns an empty erray for an empty BST', test)
 
 print('PASSED: ' + str(test_count[0]) + ' / ' + str(test_count[1]) + '\n\n')
