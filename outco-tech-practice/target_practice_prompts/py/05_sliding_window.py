@@ -129,8 +129,8 @@ def minimum_window_substring(S, T):
 #
 #
 
-# Time Complexity:
-# Auxiliary Space Complexity:
+# Time Complexity: O(mn), because of storing values using memoization, we will just recurse through all the rooms in the dungeon once
+# Auxiliary Space Complexity: O(mn), because we're storing a cache will the subproblem starting from each room of the matrix
 
 # Two steps to solve this:
 # Step one: a recursion very similar to lattice paths will let us efficiently get all paths in combination with memoization
@@ -160,6 +160,10 @@ def dungeon_escape(dungeon):
             return 0
         return max(down, right)
     return -dfs(0, 0) + 1   #we kept track of health loss starting from zero, so the actual minimum health is the negative of that +1 so there is at least one health at the end
+
+## There is another solution in my alt solutions which has the following complexity and uses sliding window:
+## Time Complexity: O(n)
+## Space Complexity: O(1)
 
 
 #############################################
