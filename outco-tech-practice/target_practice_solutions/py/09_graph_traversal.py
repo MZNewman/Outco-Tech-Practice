@@ -10,8 +10,8 @@
 #  1. For the example graph below, what is the expected output if we printed
 #     each vertex value from vertex 0 outwards using:
 #
-#     a. BREADTH FIRST traversal: 0, 1, 2, 7, 4, 5, 6, 3
-#     b. DEPTH FIRST traversal: 0, 1, 2, 4, 5, 3, 6, 7
+#     a. BREADTH FIRST traversal: [0,1,2,7,4,5,6,3]
+#     b. DEPTH FIRST traversal: [0,1,2,4,5,3,6,7]
 #
 #     NOTE: Assume the order of edges will be in numerical order. E.g., Vertex
 #           4 has edges to 4 vertices in the following order: 2, 5, 6, 7
@@ -72,22 +72,21 @@ sample_graph = deserialize(8, [[0, 1], [1, 2], [2, 4], [3, 5], [4, 5], [1, 7], [
 #
 #  HINT: Use a hash table to handle redundancy
 #
-from collections import deque
 
 def bfs(vertex):
-    queue = deque([vertex])
-    visited = {vertex}
     result = []
-
-    while queue:
-        current = queue.popleft()
+    queue = [vertex]
+    visited = set()
+    visited.add(vertex.id)
+    while len(queue) > 0:
+        current = queue.pop(0)
         for edge in current.edges:
-            if edge not in visited:
+            if edge.id not in visited:
                 queue.append(edge)
-                visited.add(edge)
+                visited.add(edge.id)
         result.append(current.id)
-
     return result
+
 
 
 #  2. Given a starting vertex, and an integer destination, return all valid
@@ -105,24 +104,28 @@ def bfs(vertex):
 
 
 def dfs(vertex, destination):
-    visited = set()
     result = []
+    visited = set()
 
     def traverse(current, path):
         if current in visited:
             return
         if current.id == destination:
-            result.append(path[:])  #we have to use path[:] to copy the list, because if we just append path then traverse pops elements from result later
-            return
-        edges = current.edges
-        visited.add(current)
-        for edge in edges:
-            path.append(edge.id)
-            traverse(edge, path)
+            path.append(current.id)
+            result.append(list(path))
             path.pop()
+            return
+
+        visited.add(current)
+        path.append(current.id)
+
+        for edge in current.edges:
+            traverse(edge, path)
+
+        path.pop()
         visited.remove(current)
 
-    traverse(vertex, [vertex.id])
+    traverse(vertex, [])
     return result
 
 
